@@ -1,10 +1,13 @@
 ﻿using Microsoft.Data.Sqlite;
+using static System.Net.Mime.MediaTypeNames;
 
 class Progarm
 {
 
-    string table = "CREATE TABLE Users(_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, " +
-        "Name TEXT NOT NULL, Age INTEGER NOT NULL)";
+    string table = "CREATE TABLE Clients(_Id INTEGER NOT NULL CONSTRAINT PK_Clients " +
+        "PRIMARY KEY AUTOINCREMENT,Name TEXT NULL,Surname TEXT NULL,PhoneNumber TEXT NULL,Adress TEXT NULL)";
+
+
     static void CreateTable(string connectionString, string table)
     {
         using (var connection = new SqliteConnection(connectionString))
@@ -20,23 +23,24 @@ class Progarm
 
    static void CreateEntry()
     {
-        using (var connection = new SqliteConnection("Data Source=usersdata.db"))
+        using (var connection = new SqliteConnection("Data Source=dbtest.db"))
         {
             connection.Open();
 
             SqliteCommand command = new SqliteCommand();
             command.Connection = connection;
-            command.CommandText = "INSERT INTO Users (Name, Age) VALUES ('Tom', 36)";
+            command.CommandText = "INSERT INTO Clients (Name, Surname, PhoneNumber, Adress) " +
+                "VALUES ('Tom', 'Jenkins', '+798335889', 'Pushkina 28')";
             int number = command.ExecuteNonQuery();
 
-            Console.WriteLine($"В таблицу Users добавлено объектов: {number}");
+            Console.WriteLine($"В таблицу Clients добавлено объектов: {number}");
         }
     }
 
     static void Update()
     {
-        string sqlExpression = "UPDATE Users SET Age=20 WHERE Name='Tom'";
-        using (var connection = new SqliteConnection("Data Source=usersdata.db"))
+        string sqlExpression = "UPDATE Clients  SET Name='Bob' WHERE  Id=3";
+        using (var connection = new SqliteConnection("Data Source=dbtest.db"))
         {
             connection.Open();
 
@@ -48,10 +52,10 @@ class Progarm
         }
     }
 
-    static void GetUsers()
+    static void GetClients()
     {
-        string sqlExpression = "SELECT * FROM Users";
-        using (var connection = new SqliteConnection("Data Source=usersdata.db"))
+        string sqlExpression = "SELECT * FROM Clients";
+        using (var connection = new SqliteConnection("Data Source=dbtest.db"))
         {
             connection.Open();
 
@@ -64,9 +68,11 @@ class Progarm
                     {
                         var id = reader.GetValue(0);
                         var name = reader.GetValue(1);
-                        var age = reader.GetValue(2);
+                        var surname = reader.GetValue(2);
+                        var phone = reader.GetValue(3);
+                        var adress = reader.GetValue(4);
 
-                        Console.WriteLine($"{id} \t {name} \t {age}");
+                        Console.WriteLine($"{id} \t {name} \t {surname} \t {phone} \t {adress} ");
                     }
                 }
             }
@@ -75,11 +81,11 @@ class Progarm
 
     static void GetName(string username)
     {
-        using (var connection = new SqliteConnection("Data Source=usersdata.db"))
+        using (var connection = new SqliteConnection("Data Source=dbtest.db"))
         {
             connection.Open();
 
-            string sqlExpression = "SELECT * FROM Users WHERE (Name)=(@name)";
+            string sqlExpression = "SELECT * FROM Clients WHERE (Name)=(@name)";
 
             SqliteCommand command = new SqliteCommand(sqlExpression, connection);
             // создаем параметр для имени
@@ -112,7 +118,7 @@ class Progarm
     static void Delete(int id)
     {
         string sqlExpression = "DELETE  FROM Users WHERE _id=@id";
-        using (var connection = new SqliteConnection("Data Source=usersdata.db"))
+        using (var connection = new SqliteConnection("Data Source=dbtest.db"))
         {
             connection.Open();
 
@@ -129,18 +135,19 @@ class Progarm
     }
     static void Main(string[] args)
     {
-        var connectionString = "Data Source=usersdata.db";
-        var table = "CREATE TABLE Users(_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, " +
-        "Name TEXT NOT NULL, Age INTEGER NOT NULL)";
-
+        var connectionString = "Data Source=dbtest.db";
+        //var table = "CREATE TABLE Users(_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, " +
+        //"Name TEXT NOT NULL, Age INTEGER NOT NULL)";
+        var table = "CREATE TABLE Clientssss(_Id INTEGER NOT NULL CONSTRAINT PK_Clients PRIMARY KEY AUTOINCREMENT,Name TEXT NULL,Surname TEXT NULL,PhoneNumber TEXT NULL,Adress TEXT NULL)";
         //https://metanit.com/sharp/adonetcore/4.2.php
-        //Connect(connectionString);
+
         //CreateTable(connectionString, table);
+
         //CreateEntry();
         //Update();
         //GetName("Tom");
-        GetUsers();
-        Delete(1);
-        GetUsers();
+        GetClients();
+        //Delete(1);
+        //GetUsers();
     }
 }
